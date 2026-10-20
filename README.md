@@ -1,0 +1,1 @@
+# SIGK2026Z-projekty
