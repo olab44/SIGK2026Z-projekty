@@ -1,0 +1,15 @@
+
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.pycache/
+*.ipynb_checkpoints/
+*.log
+*.out
+*.tmp
+*.swp
+*/data/
+checkpoints/
+results/
+*.venv/
