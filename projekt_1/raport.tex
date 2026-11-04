@@ -275,80 +275,84 @@ Jako punkt odniesienia (baseline) zastosowano klasyczną, nieuczoną metodę dek
 \subsection*{2. Funkcja straty}
 Model trenowano, minimalizując sumę straty pikselowej (różnica wartości pikseli między predykcją a oryginalnym ostrym obrazem) oraz straty percepcyjnej opartej na cechach z sieci VGG16, która premiuje podobieństwo \textquotedbl{}wizualne\textquotedbl{} obrazów, a nie tylko identyczność pikseli.
 
-\subsection*{3. Eksperymenty}
-Model wytrenowano na rozmyciu gaussowskim o dwóch konfiguracjach: jądro 3x3 (\ensuremath{\sigma}=1.0) oraz jądro 5x5 (\ensuremath{\sigma}=1.5). Następnie, bez żadnego dodatkowego treningu, ten sam model przetestowano na szerszym zakresie siły rozmycia, aby sprawdzić jego zdolność do generalizacji. Dla każdej konfiguracji porównano metodę klasyczną (Richardson-Lucy) z siecią neuronową.
+\subsection*{3. Wyniki}
+Model trenowano na obrazach rozmytych filtrem Gaussa dla jądra 3x3 i 5x5. Również zastosowano podział na 3 zbiory (720 obrazów treningowych, 80 do strojenia i 100 do zbioru testowego).
 
-\subsubsection*{3.1 Jądro rozmycia 3x3}
+\begin{table}[H]
+\centering\small
+\begin{tabular}{@{}clrrr@{}}
+\toprule
+Jądro & Metoda & PSNR (dB) $\uparrow$ & SSIM $\uparrow$ & LPIPS $\downarrow$ \\
+\midrule
+3x3 & Richardson-Lucy & 21.86 & 0.924 & 0.137 \\
+3x3 & Residual U-Net & \textbf{32.60} & \textbf{0.962} & \textbf{0.013} \\
+\midrule
+5x5 & Richardson-Lucy & 21.45 & 0.881 & 0.263 \\
+5x5 & Residual U-Net & \textbf{28.66} & \textbf{0.912} & \textbf{0.145} \\
+\bottomrule
+\end{tabular}
+\caption{Średnie wyniki na obrazach walidacyjnych DIV2K dla modelu}
+\end{table}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.78\linewidth]{images/deblurring_results/comparison_1.png}\par\vspace{4pt}
+\includegraphics[width=0.78\linewidth]{images/deblurring_results/comparison_2.png}\par\vspace{4pt}
+\includegraphics[width=0.78\linewidth]{images/deblurring_results/comparison_3.png}
+\caption{Przykładowe rekonstrukcje dla jądra rozmycia 3x3.}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.78\linewidth]{images/deblurring_results/comparison_4.png}\par\vspace{4pt}
+\includegraphics[width=0.78\linewidth]{images/deblurring_results/comparison_5.png}\par\vspace{4pt}
+\includegraphics[width=0.78\linewidth]{images/deblurring_results/comparison_6.png}
+\caption{Przykładowe rekonstrukcje dla jądra rozmycia 5x5.}
+\end{figure}
+
+Sieć neuronowa przewyższa Richardsona-Lucy'ego pod względem wszystkich trzech metryk dla obu rozmiarów jądra.
+
+\clearpage
+\subsection*{4. Eksperymenty}
+Oprócz oceny wyników dla danych treningowych, przetestowano również zdolność modelu do generalizacji, wykorzystując szerszy zakres siły rozmycia, bez przeprowadzania dodatkowego treningu.
+
+\subsubsection*{4.1 Jądro rozmycia 3x3}
 \noindent\begin{minipage}{\linewidth}
-\deblurexperiment{Eksperyment: \ensuremath{\sigma} = 0.5 (rozmycie słabsze niż treningowe)}
+\deblurexperiment{Eksperyment: \ensuremath{\sigma} = 1.2}
 \begin{center}
 \begin{tabular}{@{}lrrr@{}}
 \toprule
 Metoda & PSNR (dB) & SSIM & LPIPS \\
 \midrule
-Richardson-Lucy & 52.78 & 0.999 & 0.0003 \\
-Sieć neuronowa & 23.40 & 0.843 & 0.255 \\
+Richardson-Lucy & 20.70 & 0.901 & 0.217 \\
+Sieć neuronowa & 27.26 & 0.878 & 0.043 \\
 \bottomrule
 \end{tabular}
 \end{center}
 \begin{center}
-\includegraphics[width=0.67\linewidth]{images/deblurring_display/examples_k3_s0.5.jpg}\par
-{\footnotesize Przykład \ensuremath{\sigma}=0.5, jądro 3x3}
+\includegraphics[width=0.67\linewidth]{images/deblurring_display/examples_k3_s1.2.png}\par
+{\footnotesize Przykład \ensuremath{\sigma}=1.2, jądro 3x3}
 \end{center}
 \end{minipage}\par\vspace{5pt}
 \noindent\begin{minipage}{\linewidth}
-\deblurexperiment{Eksperyment: \ensuremath{\sigma} = 0.8 (rozmycie słabsze niż treningowe)}
+\deblurexperiment{Eksperyment: \ensuremath{\sigma} = 1.6}
 \begin{center}
 \begin{tabular}{@{}lrrr@{}}
 \toprule
 Metoda & PSNR (dB) & SSIM & LPIPS \\
 \midrule
-Richardson-Lucy & 22.92 & 0.935 & 0.111 \\
-Sieć neuronowa & 33.33 & 0.970 & 0.014 \\
+Richardson-Lucy & 20.66 & 0.896 & 0.232 \\
+Sieć neuronowa & 25.36 & 0.821 & 0.045 \\
 \bottomrule
 \end{tabular}
 \end{center}
 \begin{center}
-\includegraphics[width=0.67\linewidth]{images/deblurring_display/examples_k3_s0.8.jpg}\par
-{\footnotesize Przykład \ensuremath{\sigma}=0.8, jądro 3x3}
+\includegraphics[width=0.67\linewidth]{images/deblurring_display/examples_k3_s1.6.png}\par
+{\footnotesize Przykład \ensuremath{\sigma}=1.6, jądro 3x3}
 \end{center}
 \end{minipage}\par\vspace{5pt}
 \noindent\begin{minipage}{\linewidth}
-\deblurexperiment{Eksperyment: \ensuremath{\sigma} = 1.0 (siła rozmycia użyta w treningu)}
-\begin{center}
-\begin{tabular}{@{}lrrr@{}}
-\toprule
-Metoda & PSNR (dB) & SSIM & LPIPS \\
-\midrule
-Richardson-Lucy & 20.88 & 0.908 & 0.185 \\
-Sieć neuronowa & 30.07 & 0.933 & 0.031 \\
-\bottomrule
-\end{tabular}
-\end{center}
-\begin{center}
-\includegraphics[width=0.67\linewidth]{images/deblurring_display/examples_k3_s1.0.jpg}\par
-{\footnotesize Przykład \ensuremath{\sigma}=1.0, jądro 3x3}
-\end{center}
-\end{minipage}\par\vspace{5pt}
-\noindent\begin{minipage}{\linewidth}
-\deblurexperiment{Eksperyment: \ensuremath{\sigma} = 1.5 (rozmycie silniejsze niż treningowe)}
-\begin{center}
-\begin{tabular}{@{}lrrr@{}}
-\toprule
-Metoda & PSNR (dB) & SSIM & LPIPS \\
-\midrule
-Richardson-Lucy & 20.66 & 0.897 & 0.231 \\
-Sieć neuronowa & 26.49 & 0.854 & 0.052 \\
-\bottomrule
-\end{tabular}
-\end{center}
-\begin{center}
-\includegraphics[width=0.67\linewidth]{images/deblurring_display/examples_k3_s1.5.jpg}\par
-{\footnotesize Przykład \ensuremath{\sigma}=1.5, jądro 3x3}
-\end{center}
-\end{minipage}\par\vspace{5pt}
-\noindent\begin{minipage}{\linewidth}
-\deblurexperiment{Eksperyment: \ensuremath{\sigma} = 2.0 (rozmycie silniejsze niż treningowe)}
+\deblurexperiment{Eksperyment: \ensuremath{\sigma} = 2.0}
 \begin{center}
 \begin{tabular}{@{}lrrr@{}}
 \toprule
@@ -364,98 +368,44 @@ Sieć neuronowa & 25.47 & 0.822 & 0.051 \\
 {\footnotesize Przykład \ensuremath{\sigma}=2.0, jądro 3x3}
 \end{center}
 \end{minipage}\par\vspace{5pt}
-\subsubsection*{3.2 Jądro rozmycia 5x5}
+\subsubsection*{4.2 Jądro rozmycia 5x5}
 \noindent\begin{minipage}{\linewidth}
-\deblurexperiment{Eksperyment: \ensuremath{\sigma} = 0.8 (rozmycie słabsze niż treningowe)}
+\deblurexperiment{Eksperyment: \ensuremath{\sigma} = 1.65}
 \begin{center}
 \begin{tabular}{@{}lrrr@{}}
 \toprule
 Metoda & PSNR (dB) & SSIM & LPIPS \\
 \midrule
-Richardson-Lucy & 23.96 & 0.941 & 0.104 \\
-Sieć neuronowa & 34.10 & 0.974 & 0.010 \\
+Richardson-Lucy & 19.40 & 0.800 & 0.382 \\
+Sieć neuronowa & 24.91 & 0.788 & 0.218 \\
 \bottomrule
 \end{tabular}
 \end{center}
 \begin{center}
-\includegraphics[width=0.67\linewidth]{images/deblurring_display/examples_k5_s0.8.jpg}\par
-{\footnotesize Przykład \ensuremath{\sigma}=0.8, jądro 5x5}
+\includegraphics[width=0.67\linewidth]{images/deblurring_display/examples_k5_s1.65.png}\par
+{\footnotesize Przykład \ensuremath{\sigma}=1.65, jądro 5x5}
 \end{center}
 \end{minipage}\par\vspace{5pt}
-\noindent\begin{minipage}{\linewidth}
-\deblurexperiment{Eksperyment: \ensuremath{\sigma} = 1.0 (rozmycie słabsze niż treningowe)}
+\deblurexperiment{Eksperyment: \ensuremath{\sigma} = 2.2}
 \begin{center}
 \begin{tabular}{@{}lrrr@{}}
 \toprule
 Metoda & PSNR (dB) & SSIM & LPIPS \\
 \midrule
-Richardson-Lucy & 21.72 & 0.896 & 0.227 \\
-Sieć neuronowa & 29.64 & 0.929 & 0.085 \\
+Richardson-Lucy & 18.28 & 0.781 & 0.366 \\
+Sieć neuronowa & 23.83 & 0.733 & 0.209 \\
 \bottomrule
 \end{tabular}
 \end{center}
 \begin{center}
-\includegraphics[width=0.67\linewidth]{images/deblurring_display/examples_k5_s1.0.jpg}\par
-{\footnotesize Przykład \ensuremath{\sigma}=1.0, jądro 5x5}
+\includegraphics[width=0.67\linewidth]{images/deblurring_display/examples_k5_s2.2.png}\par
+{\footnotesize Przykład \ensuremath{\sigma}=2.2, jądro 5x5}
 \end{center}
-\end{minipage}\par\vspace{5pt}
-\noindent\begin{minipage}{\linewidth}
-\deblurexperiment{Eksperyment: \ensuremath{\sigma} = 1.5 (siła rozmycia użyta w treningu)}
-\begin{center}
-\begin{tabular}{@{}lrrr@{}}
-\toprule
-Metoda & PSNR (dB) & SSIM & LPIPS \\
-\midrule
-Richardson-Lucy & 19.93 & 0.812 & 0.372 \\
-Sieć neuronowa & 26.75 & 0.857 & 0.132 \\
-\bottomrule
-\end{tabular}
-\end{center}
-\begin{center}
-\includegraphics[width=0.67\linewidth]{images/deblurring_display/examples_k5_s1.5.jpg}\par
-{\footnotesize Przykład \ensuremath{\sigma}=1.5, jądro 5x5}
-\end{center}
-\end{minipage}\par\vspace{5pt}
-\noindent\begin{minipage}{\linewidth}
-\deblurexperiment{Eksperyment: \ensuremath{\sigma} = 2.0 (rozmycie silniejsze niż treningowe)}
-\begin{center}
-\begin{tabular}{@{}lrrr@{}}
-\toprule
-Metoda & PSNR (dB) & SSIM & LPIPS \\
-\midrule
-Richardson-Lucy & 18.50 & 0.785 & 0.374 \\
-Sieć neuronowa & 24.49 & 0.768 & 0.115 \\
-\bottomrule
-\end{tabular}
-\end{center}
-\begin{center}
-\includegraphics[width=0.67\linewidth]{images/deblurring_display/examples_k5_s2.0.jpg}\par
-{\footnotesize Przykład \ensuremath{\sigma}=2.0, jądro 5x5}
-\end{center}
-\end{minipage}\par\vspace{5pt}
-\noindent\begin{minipage}{\linewidth}
-\deblurexperiment{Eksperyment: \ensuremath{\sigma} = 3.0 (rozmycie znacznie silniejsze niż treningowe)}
-\begin{center}
-\begin{tabular}{@{}lrrr@{}}
-\toprule
-Metoda & PSNR (dB) & SSIM & LPIPS \\
-\midrule
-Richardson-Lucy & 18.06 & 0.774 & 0.349 \\
-Sieć neuronowa & 23.10 & 0.695 & 0.164 \\
-\bottomrule
-\end{tabular}
-\end{center}
-\begin{center}
-\includegraphics[width=0.67\linewidth]{images/deblurring_display/examples_k5_s3.0.jpg}\par
-{\footnotesize Przykład \ensuremath{\sigma}=3.0, jądro 5x5}
-\end{center}
-\end{minipage}\par\vspace{5pt}
-\subsection*{4. Wnioski}
+\subsection*{5. Wnioski}
 \begin{itemize}
-\item Dla rozmycia o sile zbliżonej do treningowej lub silniejszej (\ensuremath{\sigma} \ensuremath{\geq} 0.8) sieć neuronowa wyraźnie przewyższa metodę klasyczną we wszystkich trzech metrykach, a różnica w LPIPS jest szczególnie duża --- obrazy wyglądają percepcyjnie dużo bliżej oryginału.
-\item Dla bardzo słabego rozmycia (3x3, \ensuremath{\sigma}=0.5, niemal brak rozmycia) sieć wypada gorzej niż metoda klasyczna --- nie rozpoznaje, że obraz jest już prawie ostry, i wprowadza niepotrzebne zmiany. Richardson-Lucy radzi sobie tu niemal idealnie, ponieważ zna dokładny kształt rozmycia.
-\item Wraz ze wzrostem siły rozmycia powyżej wartości treningowych jakość rekonstrukcji sieci spada, jednak nadal pozostaje wyraźnie lepsza od metody klasycznej pod względem percepcyjnym (LPIPS).
-\item Metoda klasyczna korzysta z dokładnie znanego kształtu rozmycia, co w praktyce rzadko jest dostępne --- mimo to przegrywa z siecią w większości testowanych przypadków, poza skrajnie słabym rozmyciem.
+\item Model wyraźnie przewyższa metodę Richardsona-Lucy'ego we wszystkich trzech metrykach na danych o sile rozmycia zbliżonej do treningowej, a różnica w LPIPS jest szczególnie duża --- obrazy wyglądają percepcyjnie dużo bliżej oryginału.
+\item Model dobrze generalizuje w pewnym zakresie wokół wartości treningowej: dla jądra 3x3 nadal radzi sobie dobrze przy \ensuremath{\sigma}=1.2 i 1.6, a dla jądra 5x5 przy \ensuremath{\sigma}=1.65 i 2.2, utrzymując wyraźną przewagę nad metodą klasyczną pod względem LPIPS i PSNR.
+\item Wraz ze wzrostem siły rozmycia znacznie powyżej wartości treningowych jakość rekonstrukcji sieci spada, jednak nadal pozostaje wyraźnie lepsza od metody klasycznej pod względem percepcyjnym (LPIPS).
 \end{itemize}
 \endgroup
 
