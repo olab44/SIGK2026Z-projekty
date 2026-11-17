@@ -13,3 +13,6 @@ __pycache__/
 checkpoints/
 results/figures/
 *.venv/
+/projekt_2/runs/
+/projekt_2/g_drive/
+/projekt_2/.idea/

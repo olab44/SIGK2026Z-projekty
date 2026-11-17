@@ -289,6 +289,70 @@ class RestorationLoss(nn.Module):
         return loss
 
 
+class VGGFeatureLoss(nn.Module):
+    """Average L1 feature error after the first two frozen VGG-16 blocks."""
+
+    def __init__(self) -> None:
+        super().__init__()
+        from torchvision.models import VGG16_Weights, vgg16
+
+        weights = VGG16_Weights.IMAGENET1K_V1
+        features = vgg16(weights=weights).features
+        self.block1 = features[:4].requires_grad_(False).eval()  # relu1_2
+        self.block2 = features[4:9].requires_grad_(False).eval()  # relu2_2
+        normalization = weights.transforms()
+        self.register_buffer("mean", torch.tensor(normalization.mean).view(1, 3, 1, 1))
+        self.register_buffer("std", torch.tensor(normalization.std).view(1, 3, 1, 1))
+
+    def features(self, image: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor]:
+        # Keep the original spatial alignment of the prediction and target patches.
+        first = self.block1((image.clamp(0, 1) - self.mean) / self.std)
+        return first, self.block2(first)
+
+    def forward(self, pred: torch.Tensor, target: torch.Tensor) -> torch.Tensor:
+        with torch.no_grad():
+            target_first, target_second = self.features(target)
+        pred_first, pred_second = self.features(pred)
+        return 0.5 * (F.l1_loss(pred_first, target_first) + F.l1_loss(pred_second, target_second))
+
+
+class ExposurePerceptualLoss(nn.Module):
+    """RGB restoration, local exposure matching and perceptual reconstruction."""
+
+    def __init__(
+        self,
+        ssim_weight: float = 0.10,
+        exposure_weight: float = 0.20,
+        perceptual_weight: float = 0.02,
+    ) -> None:
+        super().__init__()
+        self.restoration = RestorationLoss(ssim_weight=ssim_weight)
+        self.exposure_weight = exposure_weight
+        self.perceptual_weight = perceptual_weight
+        self.perceptual = VGGFeatureLoss() if perceptual_weight != 0 else None
+        self.register_buffer("luma", torch.tensor([0.299, 0.587, 0.114]).view(1, 3, 1, 1))
+
+    def exposure(self, pred: torch.Tensor, target: torch.Tensor) -> torch.Tensor:
+        # Pool the signed difference so the loss matches regional mean luma.
+        luma_error = ((pred - target) * self.luma).sum(dim=1, keepdim=True)
+        height, width = luma_error.shape[-2:]
+        losses = [
+            F.avg_pool2d(
+                luma_error, (min(size, height), min(size, width)), ceil_mode=True,
+            ).abs().mean()
+            for size in (16, 64)
+        ]
+        return 0.5 * (losses[0] + losses[1])
+
+    def forward(self, pred: torch.Tensor, target: torch.Tensor) -> torch.Tensor:
+        loss = self.restoration(pred, target)
+        if self.exposure_weight != 0:
+            loss = loss + self.exposure_weight * self.exposure(pred, target)
+        if self.perceptual is not None:
+            loss = loss + self.perceptual_weight * self.perceptual(pred, target)
+        return loss
+
+
 # --------------------------------------------------------------------------- #
 # Utilities
 # --------------------------------------------------------------------------- #
