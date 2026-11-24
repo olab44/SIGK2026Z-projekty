@@ -5,7 +5,7 @@ import sys
 import torch
 
 REPO = "https://github.com/olab44/SIGK2026Z-projekty.git"
-BRANCH = "main"
+BRANCH = "feat/p3_architecture"  # must be pushed to GitHub (the kernel clones from there)
 CLONE = "/tmp/repo"
 # One entry per training run; extra CLI flags go after the name (e.g. "--no_gan").
 RUNS = [("relative_gan", [])]

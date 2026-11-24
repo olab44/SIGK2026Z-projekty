@@ -18,3 +18,10 @@ torchvision>=0.18
 pandas>=2.2
 scikit-image>=0.24
 matplotlib>=3.9
+
+# Evaluation (FLIP, LPIPS, SSIM, Hausdorff on Canny edges)
+lpips>=0.1.4
+flip-evaluator>=1.4
+opencv-python>=4.10,<5
+scipy>=1.13
+tqdm>=4.66

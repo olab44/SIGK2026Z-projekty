@@ -20,5 +20,13 @@ The dataset is committed in git (`data/phong`, 12 MB);
 git add -A && git commit -m "data + job" && git push
 uvx --with six kaggle kernels push -p jobs/2026-11-24_01_gan-v1        # set <kaggle-user> in kernel-metadata.json first
 uvx --with six kaggle kernels status <kaggle-user>/sigk3-gan-v1
-uvx --with six kaggle kernels output <kaggle-user>/sigk3-gan-v1 -p runs_kaggle   # best.pt, losses.csv, samples/
+```
+
+Fetch the results (waits until the kernel finishes, then downloads `best.pt`, `losses.csv`, samples into `runs/`),
+then evaluate on the 600 test images (FLIP, LPIPS, SSIM, Hausdorff + figures):
+
+```bash
+python scripts/fetch_kaggle.py <kaggle-user>/sigk3-gan-v1
+cd src && python -m neural.evaluate --checkpoint ../runs/relative_gan/best.pt
+# -> ../runs/relative_gan/eval_test/{results.md, results.json, per_image.csv, images/, figures/}
 ```
