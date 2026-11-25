@@ -1,0 +1,107 @@
+{
+  "split": "test",
+  "n_images": 600,
+  "checkpoint": "../runs/relative_gan/best.pt",
+  "model_config": {
+    "data_dir": "/tmp/repo/projekt_3/data/phong",
+    "runs_dir": "/kaggle/working/runs",
+    "run_name": "relative_gan",
+    "encoding": "relative",
+    "pixel_rel_maps": false,
+    "no_gan": false,
+    "alpha": 20.0,
+    "lambda_adv": 1.0,
+    "lambda_l1": 100.0,
+    "lambda_mask": 2.0,
+    "epochs": 300,
+    "batch_size": 32,
+    "lr": 0.0002,
+    "ema": 0.999,
+    "base_ch": 512,
+    "amp": true,
+    "seed": 42,
+    "device": "cuda",
+    "val_every": 5,
+    "sample_every": 10,
+    "num_workers": 2,
+    "resume": false,
+    "max_iters": null,
+    "smoke": false,
+    "cond_dim": 11
+  },
+  "canny": [
+    20,
+    60
+  ],
+  "results": {
+    "neural_renderer": {
+      "flip": {
+        "mean": 0.0014053840551059692,
+        "std": 0.0015125820609255183,
+        "median": 0.001104726572521031
+      },
+      "lpips": {
+        "mean": 0.0027629180302028546,
+        "std": 0.005129655653899421,
+        "median": 0.0014713614364154637
+      },
+      "ssim": {
+        "mean": 0.9988761922937148,
+        "std": 0.0018866444035599628,
+        "median": 0.9993055648731134
+      },
+      "hausdorff": {
+        "mean": 2.3287075941411355,
+        "std": 2.371452636604002,
+        "median": 1.4142135623730951
+      },
+      "hausdorff_penalty_count": 0
+    },
+    "black_image": {
+      "flip": {
+        "mean": 0.006976422680309042,
+        "std": 0.0040694373665194515,
+        "median": 0.006209152285009623
+      },
+      "lpips": {
+        "mean": 0.19826745412002006,
+        "std": 0.06795751950746283,
+        "median": 0.19504914432764053
+      },
+      "ssim": {
+        "mean": 0.9843197085843942,
+        "std": 0.009625231648862882,
+        "median": 0.9870632769858325
+      },
+      "hausdorff": {
+        "mean": 181.01933598375624,
+        "std": 5.684341886080802e-14,
+        "median": 181.01933598375618
+      },
+      "hausdorff_penalty_count": 600
+    },
+    "mean_train_image": {
+      "flip": {
+        "mean": 0.01820533728071799,
+        "std": 0.0038974332657809056,
+        "median": 0.017472805455327034
+      },
+      "lpips": {
+        "mean": 0.19966726715986927,
+        "std": 0.06791798084912318,
+        "median": 0.19616632908582687
+      },
+      "ssim": {
+        "mean": 0.9314169504964999,
+        "std": 0.007800293335417392,
+        "median": 0.9334813802242383
+      },
+      "hausdorff": {
+        "mean": 181.01933598375624,
+        "std": 5.684341886080802e-14,
+        "median": 181.01933598375618
+      },
+      "hausdorff_penalty_count": 600
+    }
+  }
+}
